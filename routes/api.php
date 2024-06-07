@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -32,4 +33,5 @@ Route::post('category', [CategoryController::class, 'store'])->name('category.st
 
 Route::resources([
    'role' => RoleController::class,
+    'user' => UserController::class
 ]);
