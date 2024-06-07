@@ -6,28 +6,22 @@ use App\Http\Requests\RoleStoreRequest;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use function Carbon\this;
 
 class RoleController extends Controller
 {
+
+    public function __construct()
+    {
+        if (auth('sanctum')->check() && auth('sanctum')->user()->role->name !== 'Admin') {
+            return abort(401);
+        };
+    }
 
 
     public function index()
     {
 
-        // Get the authenticated user
-//        dd(auth('sanctum')->user()->role->name);
-
-        if (! Gate::allows('admin', auth('sanctum')->user())) {
-            abort(401); // Unauthorized
-        }
-
-//        if (! Gate::allows('update-post', $post)) {
-//            abort(403);
-//        }
-
-//        if (auth('sanctum')->check() && auth('sanctum')->user()->role->name == 'User') {
-//            abort(401);
-//        }
         return  Role::all();
 
     }
@@ -35,9 +29,7 @@ class RoleController extends Controller
 
     public function store(RoleStoreRequest $request)
     {
-        if (auth('sanctum')->check() && auth('sanctum')->user()->role->name == 'User') {
-            abort(401);
-        }
+
         Role::create([
            'name' => $request->name
         ]);
@@ -47,6 +39,7 @@ class RoleController extends Controller
 
     public function show(Role $role)
     {
+
        return Role::where('id', $role->id)->first();
     }
 

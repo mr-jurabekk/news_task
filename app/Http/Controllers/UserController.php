@@ -9,6 +9,15 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+
+    public function __construct()
+    {
+        if (auth('sanctum')->check() && auth('sanctum')->user()->role->name !== 'Admin') {
+            return abort(401);
+        };
+    }
+
+
     /**
      * Display a listing of the resource.
      */
@@ -71,6 +80,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+
         $data = User::where('id', $user->id)->first();
         $data->delete();
         return response()->json([

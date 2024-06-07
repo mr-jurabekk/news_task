@@ -10,6 +10,13 @@ use function Nette\Utils\data;
 
 class CategoryController extends Controller
 {
+
+    public function __construct()
+    {
+        if (auth('sanctum')->check() && auth('sanctum')->user()->role->name !== 'Admin') {
+            return abort(401);
+        };
+    }
     public function index()
     {
         return Category::all();
