@@ -6,6 +6,7 @@ use App\Http\Requests\NewsStoreRequest;
 use App\Models\News;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class NewsController extends Controller
@@ -20,15 +21,25 @@ class NewsController extends Controller
 
     public function store(NewsStoreRequest $request)
     {
-        if (auth('sanctum')->check() && auth('sanctum')->user()->role->name !== 'Admin') {
+        if (auth('sanctum')->check() && auth('sanctum')->user()->role->name !== 'Admin' || ! auth('sanctum')->user()) {
             return abort(401);
         };
+
+        if ($request->hasFile('file_url')){
+            $file = $request->file('file_url');
+            $name = $file->hashName();
+
+            $path = $request->file('file_url')->storeAs(
+                'files', $name, 'public'
+            );
+        }
+
         $data = [
         'user_id' => auth('sanctum')->user()->id,
         'category_id' => $request->category_id,
         'name' => $request->name,
         'description' => $request->description,
-        'image' => $request->image,
+        'image' =>  $path ?? null,
         'slug' => Str::slug($request->name, '-')
 
         ];
@@ -51,9 +62,18 @@ class NewsController extends Controller
 
     public function update(NewsStoreRequest $request, News $slug)
     {
-        if (auth('sanctum')->check() && auth('sanctum')->user()->role->name !== 'Admin') {
+        if (auth('sanctum')->check() && auth('sanctum')->user()->role->name !== 'Admin' || ! auth('sanctum')->user()) {
             return abort(401);
         };
+
+        if ($request->hasFile('file_url')){
+            if (isset($slug->file_url)){
+                Storage::delete($slug->file_url);
+            }
+            $name = $request->file('file_url')->hashName();
+            $path = $request->file('file_url')->storeAs(
+                'files', $name, 'public');
+        }
 
 
         $data = News::where('slug', $slug->slug)->first();
@@ -62,7 +82,7 @@ class NewsController extends Controller
             'category_id' => $request->category_id,
             'name' => $request->name,
             'description' => $request->description,
-            'image' => $request->image,
+            'image' => $path ?? $slug->file_url,
             'slug' => Str::slug($request->name, '-')
         ]);
 
@@ -74,7 +94,7 @@ class NewsController extends Controller
 
     public function destroy(News $slug)
     {
-        if (auth('sanctum')->check() && auth('sanctum')->user()->role->name !== 'Admin') {
+        if (auth('sanctum')->check() && auth('sanctum')->user()->role->name !== 'Admin' || ! auth('sanctum')->user()) {
             return abort(401);
         };
 
@@ -86,7 +106,7 @@ class NewsController extends Controller
             ]);
         } else {
             return response()->json([
-                'success' => 'Something went wrong', 'status' => 400
+                'success' => 'Something went wrong', 'status' => 417
             ]);
         }
     }

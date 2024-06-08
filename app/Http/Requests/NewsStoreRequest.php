@@ -22,9 +22,9 @@ class NewsStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-//            'name' => 'required',
-//            'description' => 'required',
-//            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'name' => 'required',
+            'description' => 'required',
+//            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ];
     }
 }

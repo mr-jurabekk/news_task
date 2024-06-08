@@ -12,7 +12,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        if (auth('sanctum')->check() && auth('sanctum')->user()->role->name !== 'Admin') {
+        if (auth('sanctum')->check() && auth('sanctum')->user()->role->name !== 'Admin' || ! auth('sanctum')->user()) {
             return abort(401);
         };
     }

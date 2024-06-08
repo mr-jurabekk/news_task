@@ -21,4 +21,8 @@ class Category extends Model
     {
         return 'slug';
     }
+
+    protected $casts = [
+        'attributes' => 'json',
+    ];
 }
